@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { FlatList, TextInput, Image, StyleSheet, TouchableWithoutFeedback, Text, TouchableOpacity, View, AsyncStorage } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 
@@ -18,11 +18,21 @@ export default function HomeScreen(props) {
     const [sortByPrice, setSortByPrice] = useState('none');
     const [favoriteItems, setFavoriteItems] = useState([]);
     const [cartItems, setCartItems] = useState([]);
-
+    const [addedProduct, setAddedProduct] = useState(null);
     const [activeTab, setActiveTab] = useState(0);
 
 
+    const handleAddProduct = (productId) => {
+        setCartItems([...cartItems, productId]);
+        setAddedProduct(productId);
+      };
 
+      useEffect(() => {
+        if (addedProduct) {
+          console.log(cartItems.length);
+          navigation.navigate("Cart", { cartItems });
+        }
+      }, [addedProduct, cartItems]);
 
     const onClear = () => {
         setName("");
@@ -230,15 +240,15 @@ export default function HomeScreen(props) {
     };
 
 
-    const addToCart = (productId) => {
+    const addToCart =(productId) => {
         // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
-        console.log(data)
-        const isProductInCart = data.find(item => item.id === productId);
 
+        const isProductInCart = cartItems.find(item => item.id === productId.id);
+      
         if (isProductInCart) {
             // Nếu sản phẩm đã tồn tại trong giỏ hàng, bạn có thể thực hiện các xử lý tương ứng, ví dụ: tăng số lượng sản phẩm lên 1
-            const updatedCartItems = data.map(item => {
-                if (item.id === productId) {
+            const updatedCartItems = cartItems.map(item => {
+                if (item.id === productId.id) {
                     return {
                         ...item,
                         TrangThaiHang: item.TrangThaiHang + 1
@@ -246,18 +256,15 @@ export default function HomeScreen(props) {
                 }
                 return item;
             });
-            setData(updatedCartItems);
-            navigation.navigate("Cart",{data})
+            setCartItems(updatedCartItems);
+            navigation.navigate("Cart",{cartItems})
+            console.log("Don hang da ton tai")
         } else {
             // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm sản phẩm mới vào
-            const productToAdd = {
-                id: productId,
-                TrangThaiHang: 1
-            };
-            data([...data, productToAdd]);
-            navigation.navigate("Cart",{data})
+            handleAddProduct(productId)
+            
         }
-
+       
     };
 
 
@@ -397,7 +404,7 @@ export default function HomeScreen(props) {
                                             </View>
                                         </View>
                                         <TouchableOpacity
-                                            onPress={() => addToCart(item.id.toString())}
+                                            onPress={() => addToCart(item)}
                                             style={{
                                                 backgroundColor: '#00B761',
                                                 width: 30,
