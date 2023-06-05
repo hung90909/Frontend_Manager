@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -10,15 +10,19 @@ import  EditScreen  from './src/screens/EditScreen';
 import  Detail from './src/screens/DetailScreen';
 import  CartScreen  from './src/screens/CartScreen';
 import  ProfileScreen from './src/screens/ProfileScreen';
-import  MoreScreen  from './src/screens/MoreScreen';
+import  MoreScreen  from './src/screens/StatusScreen';
 import SearchScreen from './src/screens/SearchScreen';
-
+import LoginScreen from './src/screens/LoginScreen';
+import RegisterScreen from './src/screens/RegisterScreen';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+
+
 function MainTabScreen() {
   return (
     <Tab.Navigator
-    tabBarOptions={{
+    screenOptions={{
       activeTintColor: '#00B761',
       inactiveTintColor: 'black',
     }}
@@ -72,9 +76,12 @@ function MainTabScreen() {
   );
 }
 function App() {
+  const [orderCount, setOrderCount] = useState(0);
   return (
     <NavigationContainer>
     <Stack.Navigator>
+    <Stack.Screen options={{headerShown: false,}} name="Login" component={LoginScreen} />
+    <Stack.Screen options={{headerShown: false,}} name="Register" component={RegisterScreen} />
     <Stack.Screen name="Main" component={MainTabScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Add" component={AddScreen} />

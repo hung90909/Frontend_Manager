@@ -40,7 +40,7 @@ export default function SearchScreen({ route }) {
             <TouchableOpacity
 
               onPress={() => {
-                navigation.navigate('Detail', { item, setData, data })
+               {handleItemPress(item)}
               }}>
 
               <View style={{

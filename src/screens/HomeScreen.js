@@ -6,15 +6,18 @@ export default function HomeScreen(props) {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const navigation = useNavigation();
-    const route = useRoute();
+    const nav = props.navigation;
+    // const route = useRoute();
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [image, setImage] = useState('');
     const [statut, setStatut] = useState('');
     const [LoaiSP, setLoaiSP] = useState('');
     const [isFavorite, setIsFavorite] = useState('');
+    const [TrangThaiHang, setTrangThaiHang] = useState('');
     const [sortByPrice, setSortByPrice] = useState('none');
     const [favoriteItems, setFavoriteItems] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
 
     const [activeTab, setActiveTab] = useState(0);
 
@@ -28,6 +31,7 @@ export default function HomeScreen(props) {
         setStatut("");
         setLoaiSP("");
         setIsFavorite("");
+        setTrangThaiHang("");
     };
 
     const [data, setData] = useState([
@@ -39,6 +43,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 1,
             isFavorite: false,
+            TrangThaiHang: 0
         },
         {
             id: 2,
@@ -48,6 +53,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 2,
             isFavorite: false,
+            TrangThaiHang: 0
         },
         {
             id: 3,
@@ -57,6 +63,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 3,
             isFavorite: false,
+            TrangThaiHang: 1
         },
         {
             id: 4,
@@ -66,6 +73,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 1,
             isFavorite: false,
+            TrangThaiHang: 0
         },
         {
             id: 5,
@@ -75,6 +83,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 2,
             isFavorite: false,
+            TrangThaiHang: 0
         },
         {
             id: 6,
@@ -84,6 +93,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 3,
             isFavorite: false,
+            TrangThaiHang: 0
         },
         {
             id: 7,
@@ -93,6 +103,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 1,
             isFavorite: false,
+            TrangThaiHang: 0
         },
         {
             id: 8,
@@ -102,6 +113,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 2,
             isFavorite: false,
+            TrangThaiHang: 0
         },
         {
             id: 9,
@@ -111,6 +123,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 3,
             isFavorite: false,
+            TrangThaiHang: 0
         },
         {
             id: 10,
@@ -120,6 +133,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 1,
             isFavorite: false,
+            TrangThaiHang: 0
         },
         {
             id: 11,
@@ -129,6 +143,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 2,
             isFavorite: false,
+            TrangThaiHang: 0
         },
         {
             id: 12,
@@ -138,6 +153,7 @@ export default function HomeScreen(props) {
             statut: 0,
             LoaiSP: 3,
             isFavorite: false,
+            TrangThaiHang: 0
         },
 
     ]);
@@ -213,18 +229,56 @@ export default function HomeScreen(props) {
         setFavoriteItems(updatedFavoriteItems);
     };
 
+
+    const addToCart = (productId) => {
+        // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+        console.log(data)
+        const isProductInCart = data.find(item => item.id === productId);
+
+        if (isProductInCart) {
+            // Nếu sản phẩm đã tồn tại trong giỏ hàng, bạn có thể thực hiện các xử lý tương ứng, ví dụ: tăng số lượng sản phẩm lên 1
+            const updatedCartItems = data.map(item => {
+                if (item.id === productId) {
+                    return {
+                        ...item,
+                        TrangThaiHang: item.TrangThaiHang + 1
+                    };
+                }
+                return item;
+            });
+            setData(updatedCartItems);
+            navigation.navigate("Cart",{data})
+        } else {
+            // Nếu sản phẩm chưa tồn tại trong giỏ hàng, thêm sản phẩm mới vào
+            const productToAdd = {
+                id: productId,
+                TrangThaiHang: 1
+            };
+            data([...data, productToAdd]);
+            navigation.navigate("Cart",{data})
+        }
+
+    };
+
+
     const [columns, setColumns] = useState(2);
     return (
-        <View style={{ backgroundColor:'#fff'}}>
+        <View style={{ backgroundColor: '#fff' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', marginLeft: 30 }}>
                 <View style={{ marginTop: 50 }}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                         Welcome to
                     </Text>
-                    <Text style={{ color: '#00B761', fontSize: 27, fontWeight: 'bold' }}> I STORE</Text>
+                    <Text style={{ color: '#00B761', fontSize: 27, fontWeight: 'bold' }}> ISTORE</Text>
                 </View>
                 <View>
-                    <TouchableOpacity onPress={handleSortByPrice}>
+                    <TouchableOpacity
+                        onPress={() => {
+
+                            const filteredItems = data.filter((item) => item.TrangThaiHang === 1);
+                            navigation.navigate('Cart', { cartItems: filteredItems });
+                        }}
+                    >
                         <View style={{ height: 40, width: 40, right: -230, position: 'absolute', borderColor: 'black', borderRadius: 5, marginLeft: 10 }}>
                             <Image source={require("../../assets/cart.png")} style={{ width: 30, height: 30, alignContent: 'center', alignItems: 'center' }} />
                         </View>
@@ -241,7 +295,7 @@ export default function HomeScreen(props) {
                         backgroundColor: '#F1F1F1',
                         margin: 10,
                         padding: 5,
-                        borderRadius:10
+                        borderRadius: 10
                     }}
                     placeholder="Tìm kiếm theo tên sản phẩm"
                     value={searchQuery}
@@ -250,8 +304,8 @@ export default function HomeScreen(props) {
                 />
 
                 <TouchableOpacity onPress={handleSortByPrice}>
-                    <View style={{ height: 40, width: 40, borderWidth: 1, borderColor: '#f1f1f1', borderRadius: 5, backgroundColor: '#00B761', marginRight: 10 }}>
-                        <Image source={require("../../assets/order.png")} style={{ width: 30, height: 30, alignContent: 'center', alignItems: 'center' }} />
+                    <View style={{ height: 40, width: 40, borderWidth: 1, borderColor: '#f1f1f1', borderRadius: 5, backgroundColor: '#00B761', marginRight: 10, justifyContent: 'center' }}>
+                        <Image source={require("../../assets/order.png")} style={{ width: 30, height: 30, alignContent: 'center', alignItems: 'center', tintColor: '#fff' }} />
                     </View>
                 </TouchableOpacity>
             </View>
@@ -336,26 +390,27 @@ export default function HomeScreen(props) {
                                             <Text style={{ fontSize: 22, top: 10, left: 20, fontWeight: "bold" }}>{item.name}</Text>
                                             <View style={{ marginLeft: 10, flex: 1, }}>
 
-                                                <Text style={{ fontSize: 20, color: 'red' }}> {item.price} đ</Text>
+                                                <Text style={{ fontSize: 20, color: 'red', top: 10 }}> {item.price} đ</Text>
                                                 <View style={{ flexDirection: "row" }}>
-                                                    <Text style={{ color: ColorStatut(item.statut) }}>{Statut(item.statut)}</Text>
+                                                    <Text style={{ color: ColorStatut(item.statut), top: 10 }}>{Statut(item.statut)}</Text>
                                                 </View>
                                             </View>
                                         </View>
                                         <TouchableOpacity
+                                            onPress={() => addToCart(item.id.toString())}
                                             style={{
                                                 backgroundColor: '#00B761',
-                                                width: 40,
-                                                height: 40,
+                                                width: 30,
+                                                height: 30,
                                                 borderRadius: 69,
                                                 position: 'absolute',
-                                                bottom: 40,
+                                                bottom: 20,
                                                 right: 10,
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                             }}
                                         >
-                                            <Image style={{ width: 30, height: 30 }} source={require("../../assets/add.png")} />
+                                            <Image style={{ width: 15, height: 15, tintColor: '#fff' }} source={require("../../assets/add.png")} />
                                         </TouchableOpacity>
 
                                     </TouchableOpacity>
@@ -419,7 +474,7 @@ export default function HomeScreen(props) {
                                                 resizeMode: 'cover',
                                                 marginTop: 10,
 
-                                            }}
+                                            }} Khach
                                                 source={{ uri: item.Image }} />
                                         </View>
                                         <Text style={{ fontSize: 22, top: 10, left: 20, fontWeight: "bold" }}>{item.name}</Text>
@@ -431,7 +486,10 @@ export default function HomeScreen(props) {
                                             </View>
                                         </View>
                                     </View>
-                                    <TouchableOpacity
+                                    {/* <TouchableOpacity
+                                        onPress={() => {
+                                            alert("click me")
+                                        }}
                                         style={{
                                             backgroundColor: '#00B761',
                                             width: 40,
@@ -445,6 +503,13 @@ export default function HomeScreen(props) {
                                         }}
                                     >
                                         <Image style={{ width: 30, height: 30 }} source={require("../../assets/add.png")} />
+                                    </TouchableOpacity> */}
+                                    <TouchableOpacity
+                                    onPress={()=>{
+                                        alert("click me")
+                                    }}
+                                    >
+                                        <Text>Them</Text>
                                     </TouchableOpacity>
 
                                 </TouchableOpacity>
